@@ -324,23 +324,84 @@ def main():
         """)
         
         # Create expander for each collision event
-        for i, log in enumerate(reversed(collision_logs[-10:])):  # Show last 10
-            with st.expander(f"🔴 Event #{len(collision_logs) - i}: {log['operation']} - Key: {log['key']} ({log['collision_count']} va chạm)"):
-                col1, col2 = st.columns([2, 3])
+        for idx, log in enumerate(reversed(collision_logs[-10:])):  # Show last 10
+            event_num = len(collision_logs) - idx
+            calc = log.get('calculation_details', {})
+            
+            with st.expander(f"🔴 Event #{event_num}: {log['operation']} - Key: {log['key']} ({log['collision_count']} va chạm)", expanded=(idx==0)):
                 
+                # ASCII Breakdown
+                if calc.get('ascii_breakdown'):
+                    st.markdown("### 🔢 Bước 1: Tính tổng ASCII")
+                    ascii_parts = ' + '.join([f"{c}({val})" for c, val in calc['ascii_breakdown']])
+                    st.code(f"{ascii_parts} = {calc['ascii_sum']}", language="")
+                
+                # Hash functions
+                if calc.get('h1_formula'):
+                    st.markdown("### 🎯 Bước 2: Tính Hash Functions")
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.markdown("**Hash Function 1 (h1):**")
+                        st.code(f"h1 = sum(ASCII) mod size\nh1 = {calc['h1_formula']}", language="python")
+                        st.success(f"**h1 = {calc['h1']}** (vị trí ban đầu)")
+                    
+                    with col2:
+                        st.markdown("**Hash Function 2 (h2):**")
+                        st.code(f"R = {calc['R']} (số nguyên tố < {calc['size']})\nh2 = R - (sum mod R)\nh2 = {calc['h2_formula']}", language="python")
+                        st.success(f"**h2 = {calc['h2']}** (bước nhảy)")
+                
+                # Probe sequence details
+                if calc.get('probe_steps'):
+                    st.markdown("### 🔍 Bước 3: Thăm dò (Probing)")
+                    
+                    for step in calc['probe_steps']:
+                        attempt = step['attempt']
+                        
+                        # Color based on status
+                        if step['status'] == 'empty':
+                            status_icon = "✅"
+                            status_color = "green"
+                            status_text = "TRỐNG - Tìm được!"
+                        elif step['status'] == 'deleted':
+                            status_icon = "⚠️"
+                            status_color = "orange"
+                            status_text = "ĐÃ XÓA - Có thể dùng"
+                        else:  # occupied
+                            status_icon = "🔴"
+                            status_color = "red"
+                            occupied_by = step.get('occupied_by', step.get('found_key', '?'))
+                            status_text = f"ĐÃ CHIẾM bởi {occupied_by}"
+                        
+                        with st.container():
+                            col_a, col_b = st.columns([3, 2])
+                            
+                            with col_a:
+                                st.markdown(f"**Lần thử {attempt}:** `{step['formula']}`")
+                            
+                            with col_b:
+                                if step['status'] == 'occupied':
+                                    st.error(f"{status_icon} Slot [{step['position']}]: {status_text}")
+                                elif step['status'] == 'empty':
+                                    st.success(f"{status_icon} Slot [{step['position']}]: {status_text}")
+                                else:
+                                    st.warning(f"{status_icon} Slot [{step['position']}]: {status_text}")
+                        
+                        # Stop after finding empty/deleted slot for insert
+                        if log['operation'] == 'INSERT' and step['status'] in ['empty', 'deleted']:
+                            break
+                
+                # Summary
+                st.divider()
+                col1, col2, col3 = st.columns(3)
                 with col1:
-                    st.write("**Thông tin:**")
-                    st.write(f"- Phép toán: `{log['operation']}`")
-                    st.write(f"- Mã SP: `{log['key']}`")
-                    st.write(f"- Số va chạm: `{log['collision_count']}`")
-                
+                    st.metric("Tổng số lần thử", len(log['probe_sequence']))
                 with col2:
-                    st.write("**Chuỗi thăm dò:**")
-                    probe_str = " → ".join([f"**[{p}]**" if i == len(log['probe_sequence'])-1 else f"[{p}]" 
-                                            for i, p in enumerate(log['probe_sequence'])])
-                    st.markdown(probe_str)
+                    st.metric("Số va chạm", log['collision_count'])
+                with col3:
+                    st.metric("Vị trí cuối", log['probe_sequence'][-1])
                 
-                st.info(f"✅ **Kết quả**: {log['resolution']}")
+                st.info(f"🎯 **Kết quả**: {log['resolution']}")
         
         if len(collision_logs) > 10:
             st.caption(f"Hiển thị 10 sự kiện gần nhất. Tổng cộng: {len(collision_logs)} sự kiện va chạm")

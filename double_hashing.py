@@ -7,12 +7,14 @@ from models import Product, HashEntry
 
 class CollisionLog:
     """Log entry for collision events"""
-    def __init__(self, key: str, operation: str, probe_sequence: List[int], resolution: str):
+    def __init__(self, key: str, operation: str, probe_sequence: List[int], resolution: str, 
+                 calculation_details: Dict = None):
         self.key = key
         self.operation = operation  # 'insert', 'search', 'delete'
         self.probe_sequence = probe_sequence
         self.resolution = resolution  # Description of how collision was resolved
         self.collision_count = len(probe_sequence) - 1  # Number of collisions
+        self.calculation_details = calculation_details or {}  # Detailed math steps
 
 
 class DoubleHashTable:
@@ -111,11 +113,41 @@ class DoubleHashTable:
         
         key = product.ma_san_pham
         probe_sequence = []
-        collision_details = []
+        
+        # Calculate detailed math for logging
+        ascii_sum = sum(ord(char) for char in key)
+        h1_value = self._hash1(key)
+        h2_value = self._hash2(key)
+        R = self._get_prime_less_than(self.size)
+        
+        calculation_details = {
+            "key": key,
+            "ascii_sum": ascii_sum,
+            "ascii_breakdown": [(c, ord(c)) for c in key],
+            "size": self.size,
+            "R": R,
+            "h1": h1_value,
+            "h1_formula": f"{ascii_sum} mod {self.size} = {h1_value}",
+            "h2": h2_value,
+            "h2_formula": f"{R} - ({ascii_sum} mod {R}) = {R} - {ascii_sum % R} = {h2_value}",
+            "probe_steps": []
+        }
         
         for i in range(self.size):
             pos = self._probe(key, i)
             probe_sequence.append(pos)
+            
+            # Log detailed probe step
+            probe_formula = f"({h1_value} + {i} × {h2_value}) mod {self.size} = ({h1_value} + {i * h2_value}) mod {self.size} = {pos}"
+            step_info = {
+                "attempt": i,
+                "formula": probe_formula,
+                "position": pos,
+                "status": "occupied" if self.table[pos] and not self.table[pos].is_deleted else ("deleted" if self.table[pos] else "empty")
+            }
+            if self.table[pos] and not self.table[pos].is_deleted:
+                step_info["occupied_by"] = self.table[pos].product.ma_san_pham
+            calculation_details["probe_steps"].append(step_info)
             
             # Empty slot or deleted slot
             if self.table[pos] is None or self.table[pos].is_deleted:
@@ -125,8 +157,8 @@ class DoubleHashTable:
                 # Log collision if occurred
                 if i > 0:
                     self.collision_count += 1
-                    resolution = f"Giải quyết bằng Double Hashing sau {i} lần thăm dó. Vị trí cuối: {pos}"
-                    self.collision_logs.append(CollisionLog(key, "INSERT", probe_sequence.copy(), resolution))
+                    resolution = f"Giải quyết bằng Double Hashing sau {i} lần thăm dò. Vị trí cuối: {pos}"
+                    self.collision_logs.append(CollisionLog(key, "INSERT", probe_sequence.copy(), resolution, calculation_details))
                 
                 return True, f"Inserted at position {pos}", probe_sequence
             
@@ -134,10 +166,9 @@ class DoubleHashTable:
             if self.table[pos].product.ma_san_pham == key:
                 return False, "Product code already exists!", probe_sequence
             
-            # Collision occurred - log details
+            # Collision occurred
             if i == 0:
                 self.collision_count += 1
-                collision_details.append(f"Va chạm tại slot {pos} (đã có {self.table[pos].product.ma_san_pham})")
         
         return False, "Could not insert (table full)", probe_sequence
     
@@ -153,20 +184,51 @@ class DoubleHashTable:
         """
         probe_sequence = []
         
+        # Calculate detailed math for logging
+        ascii_sum = sum(ord(char) for char in key)
+        h1_value = self._hash1(key)
+        h2_value = self._hash2(key)
+        R = self._get_prime_less_than(self.size)
+        
+        calculation_details = {
+            "key": key,
+            "ascii_sum": ascii_sum,
+            "ascii_breakdown": [(c, ord(c)) for c in key],
+            "size": self.size,
+            "R": R,
+            "h1": h1_value,
+            "h1_formula": f"{ascii_sum} mod {self.size} = {h1_value}",
+            "h2": h2_value,
+            "h2_formula": f"{R} - ({ascii_sum} mod {R}) = {R} - {ascii_sum % R} = {h2_value}",
+            "probe_steps": []
+        }
+        
         for i in range(self.size):
             pos = self._probe(key, i)
             probe_sequence.append(pos)
             
+            # Log detailed probe step
+            probe_formula = f"({h1_value} + {i} × {h2_value}) mod {self.size} = ({h1_value} + {i * h2_value}) mod {self.size} = {pos}"
+            step_info = {
+                "attempt": i,
+                "formula": probe_formula,
+                "position": pos,
+                "status": "empty" if self.table[pos] is None else ("deleted" if self.table[pos].is_deleted else "occupied")
+            }
+            if self.table[pos] and not self.table[pos].is_deleted:
+                step_info["found_key"] = self.table[pos].product.ma_san_pham
+            calculation_details["probe_steps"].append(step_info)
+            
             if self.table[pos] is None:
                 if i > 0:
                     resolution = f"Tìm kiếm thất bại sau {i} lần thăm dò. Gặp slot trống tại vị trí {pos}"
-                    self.collision_logs.append(CollisionLog(key, "SEARCH", probe_sequence.copy(), resolution))
+                    self.collision_logs.append(CollisionLog(key, "SEARCH", probe_sequence.copy(), resolution, calculation_details))
                 return None, -1, probe_sequence
             
             if not self.table[pos].is_deleted and self.table[pos].product.ma_san_pham == key:
                 if i > 0:
                     resolution = f"Tìm thấy sau {i} lần thăm dò tại vị trí {pos}"
-                    self.collision_logs.append(CollisionLog(key, "SEARCH", probe_sequence.copy(), resolution))
+                    self.collision_logs.append(CollisionLog(key, "SEARCH", probe_sequence.copy(), resolution, calculation_details))
                 return self.table[pos].product, pos, probe_sequence
         
         return None, -1, probe_sequence
@@ -233,7 +295,8 @@ class DoubleHashTable:
                 "operation": log.operation,
                 "probe_sequence": log.probe_sequence,
                 "collision_count": log.collision_count,
-                "resolution": log.resolution
+                "resolution": log.resolution,
+                "calculation_details": log.calculation_details
             }
             for log in self.collision_logs
         ]
@@ -287,7 +350,8 @@ class DoubleHashTable:
                     log["key"],
                     log["operation"],
                     log["probe_sequence"],
-                    log["resolution"]
+                    log["resolution"],
+                    log.get("calculation_details", {})
                 )
                 for log in data["collision_logs"]
             ]
