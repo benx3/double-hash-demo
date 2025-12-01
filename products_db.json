@@ -1,0 +1,159 @@
+{
+  "size": 11,
+  "count": 11,
+  "collision_count": 7,
+  "collision_logs": [
+    {
+      "key": "sp0081",
+      "operation": "INSERT",
+      "probe_sequence": [
+        10,
+        5,
+        0,
+        6
+      ],
+      "collision_count": 3,
+      "resolution": "Giải quyết bằng Double Hashing sau 3 lần thăm dó. Vị trí cuối: 6"
+    },
+    {
+      "key": "sp00811",
+      "operation": "INSERT",
+      "probe_sequence": [
+        4,
+        10,
+        5,
+        0,
+        6,
+        1,
+        7
+      ],
+      "collision_count": 6,
+      "resolution": "Giải quyết bằng Double Hashing sau 6 lần thăm dó. Vị trí cuối: 7"
+    },
+    {
+      "key": "sp00814",
+      "operation": "INSERT",
+      "probe_sequence": [
+        7,
+        10,
+        2,
+        5,
+        8
+      ],
+      "collision_count": 4,
+      "resolution": "Giải quyết bằng Double Hashing sau 4 lần thăm dó. Vị trí cuối: 8"
+    }
+  ],
+  "table": [
+    {
+      "product": {
+        "ma_san_pham": "sp003",
+        "ten_san_pham": "tủ lạnh",
+        "gia": 0.0,
+        "so_luong": 20,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    },
+    {
+      "product": {
+        "ma_san_pham": "sp004",
+        "ten_san_pham": "tủ lạnh 1",
+        "gia": 0.0,
+        "so_luong": 20,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    },
+    {
+      "product": {
+        "ma_san_pham": "sp005",
+        "ten_san_pham": "quạt máy",
+        "gia": 0.0,
+        "so_luong": 20,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    },
+    {
+      "product": {
+        "ma_san_pham": "sp006",
+        "ten_san_pham": "xe đạp",
+        "gia": 0.0,
+        "so_luong": 20,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    },
+    {
+      "product": {
+        "ma_san_pham": "sp007",
+        "ten_san_pham": "xe máy",
+        "gia": 0.0,
+        "so_luong": 20,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    },
+    {
+      "product": {
+        "ma_san_pham": "sp008",
+        "ten_san_pham": "oto",
+        "gia": 0.0,
+        "so_luong": 20,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    },
+    {
+      "product": {
+        "ma_san_pham": "sp0081",
+        "ten_san_pham": "oto 1",
+        "gia": 0.0,
+        "so_luong": 20,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    },
+    {
+      "product": {
+        "ma_san_pham": "sp00811",
+        "ten_san_pham": "oto 12",
+        "gia": 0.0,
+        "so_luong": 20,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    },
+    {
+      "product": {
+        "ma_san_pham": "sp00814",
+        "ten_san_pham": "oto 121",
+        "gia": 0.0,
+        "so_luong": 20,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    },
+    {
+      "product": {
+        "ma_san_pham": "sp001",
+        "ten_san_pham": "tivi",
+        "gia": 0.0,
+        "so_luong": 20,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    },
+    {
+      "product": {
+        "ma_san_pham": "sp002",
+        "ten_san_pham": "máy giặt",
+        "gia": 0.0,
+        "so_luong": 20,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    }
+  ]
+}
