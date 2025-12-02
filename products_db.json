@@ -1,13 +1,83 @@
 {
-  "size": 12,
-  "count": 1,
-  "collision_count": 0,
-  "collision_logs": [],
+  "size": 11,
+  "count": 3,
+  "collision_count": 2,
+  "collision_logs": [
+    {
+      "key": "SP112",
+      "operation": "INSERT",
+      "probe_sequence": [
+        3,
+        7
+      ],
+      "collision_count": 1,
+      "resolution": "Giải quyết bằng Double Hashing sau 1 lần thăm dò. Vị trí cuối: 7",
+      "calculation_details": {
+        "key": "SP112",
+        "ascii_sum": 311,
+        "ascii_breakdown": [
+          [
+            "S",
+            83
+          ],
+          [
+            "P",
+            80
+          ],
+          [
+            "1",
+            49
+          ],
+          [
+            "1",
+            49
+          ],
+          [
+            "2",
+            50
+          ]
+        ],
+        "size": 11,
+        "R": 7,
+        "h1": 3,
+        "h1_formula": "311 mod 11 = 3",
+        "h2": 4,
+        "h2_formula": "7 - (311 mod 7) = 7 - 3 = 4",
+        "probe_steps": [
+          {
+            "attempt": 0,
+            "formula": "(3 + 0 × 4) mod 11 = (3 + 0) mod 11 = 3",
+            "position": 3,
+            "status": "occupied",
+            "occupied_by": "SP013"
+          },
+          {
+            "attempt": 1,
+            "formula": "(3 + 1 × 4) mod 11 = (3 + 4) mod 11 = 7",
+            "position": 7,
+            "status": "empty"
+          }
+        ]
+      }
+    }
+  ],
   "table": [
     {
       "product": {
-        "ma_san_pham": "sp001",
-        "ten_san_pham": "tên sp 1",
+        "ma_san_pham": "SP001",
+        "ten_san_pham": "Laptop Dell",
+        "gia": 0.0,
+        "so_luong": 0,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    },
+    null,
+    null,
+    {
+      "product": {
+        "ma_san_pham": "SP013",
+        "ten_san_pham": "iPhone 15",
         "gia": 0.0,
         "so_luong": 0,
         "mo_ta": ""
@@ -17,11 +87,16 @@
     null,
     null,
     null,
-    null,
-    null,
-    null,
-    null,
-    null,
+    {
+      "product": {
+        "ma_san_pham": "SP112",
+        "ten_san_pham": "macbook pro",
+        "gia": 0.0,
+        "so_luong": 0,
+        "mo_ta": ""
+      },
+      "is_deleted": false
+    },
     null,
     null,
     null
